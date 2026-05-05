@@ -1,0 +1,137 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "evalbrain"
+version = "0.1.0"
+description = "A pluggable LLM/RAG evaluation and observability platform"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "EvalBrain Contributors" }]
+keywords = [
+    "llm",
+    "rag",
+    "evaluation",
+    "observability",
+    "hallucination",
+    "langchain",
+    "openai",
+    "mlops",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+# Core dependencies — minimal footprint
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "aiosqlite>=0.19",
+    "httpx>=0.27",
+    "rich>=13.0",
+    "typer>=0.12",
+    "pyyaml>=6.0",
+    "python-dateutil>=2.9",
+    "tiktoken>=0.7",       # fast token counting (OpenAI-compatible)
+]
+
+[project.optional-dependencies]
+# Web server + dashboard
+server = [
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+]
+# LangChain integration
+langchain = [
+    "langchain-core>=0.2",
+]
+# LlamaIndex integration
+llama-index = [
+    "llama-index-core>=0.10",
+]
+# Local NLI-based hallucination detection (large deps)
+nli = [
+    "torch>=2.2",
+    "sentence-transformers>=3.0",
+    "transformers>=4.40",
+]
+# Answer quality metrics
+metrics = [
+    "rouge-score>=0.1.2",
+    "bert-score>=0.3.13",
+]
+# PostgreSQL backend
+postgres = [
+    "asyncpg>=0.29",
+    "psycopg2-binary>=2.9",
+]
+# Everything
+all = [
+    "evalbrain[server,langchain,llama-index,nli,metrics,postgres]",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "httpx>=0.27",           # for TestClient
+    "respx>=0.21",           # mock httpx
+    "freezegun>=1.5",        # mock datetime
+]
+
+[project.scripts]
+evalbrain = "evalbrain.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/your-org/evalbrain"
+Documentation = "https://evalbrain.readthedocs.io"
+Repository = "https://github.com/your-org/evalbrain"
+"Bug Tracker" = "https://github.com/your-org/evalbrain/issues"
+
+# ── Hatch ──────────────────────────────────────────────────────────────────────
+[tool.hatch.build.targets.wheel]
+packages = ["evalbrain"]
+
+# ── Ruff (linting) ─────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+# ── Mypy ───────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
+
+# ── Pytest ─────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--cov=evalbrain --cov-report=term-missing --cov-fail-under=60"
+
+# ── Coverage ───────────────────────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["evalbrain"]
+omit = ["evalbrain/dashboard/*"]

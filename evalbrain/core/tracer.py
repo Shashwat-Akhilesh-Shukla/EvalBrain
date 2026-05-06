@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from contextlib import contextmanager
 from functools import wraps
 from typing import Any, Dict, List, Optional, Union
@@ -9,7 +9,7 @@ from evalbrain.models import Trace, Span, EvalResult
 
 # Context variables for thread/async safety
 _current_trace: ContextVar[Optional[Trace]] = ContextVar("current_trace", default=None)
-_current_spans: ContextVar[List[Span]] = ContextVar("current_spans", default_factory=list)
+_current_spans: ContextVar[List[Span]] = ContextVar("current_spans", default=[])
 
 
 class SpanContext:
@@ -26,7 +26,7 @@ class SpanContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Finalize span
-        self.span.end_time = datetime.utcnow()
+        self.span.end_time = datetime.now(timezone.utc)
         self.span.latency_ms = (self.span.end_time - self.span.start_time).total_seconds() * 1000
         
         # Pop from stack
@@ -85,14 +85,14 @@ class EvalBrain:
                 trace_id=str(uuid.uuid4()),
                 project=self.project,
                 tags=tags or {},
-                created_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc)
             )
             _current_trace.set(trace)
 
         span = Span(
             span_id=str(uuid.uuid4()),
             name=name,
-            start_time=datetime.utcnow()
+            start_time=datetime.now(timezone.utc)
         )
         trace.spans.append(span)
         

@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, ConfigDict
 
 
 class EvalResult(BaseModel):
     """Output of any evaluator."""
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
 
     metric_name: str
     score: float  # 0.0 – 1.0
@@ -16,7 +16,7 @@ class EvalResult(BaseModel):
 
 class Span(BaseModel):
     """A named unit within a trace (retrieval, generation, rerank)."""
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
 
     span_id: str
     name: str
@@ -25,7 +25,7 @@ class Span(BaseModel):
     context: Optional[Any] = None
     reference: Optional[Any] = None
     eval_results: List[EvalResult] = Field(default_factory=list)
-    start_time: datetime = Field(default_factory=datetime.utcnow)
+    start_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     end_time: Optional[datetime] = None
     latency_ms: Optional[float] = None
     cost_usd: Optional[float] = None
@@ -36,31 +36,31 @@ class Span(BaseModel):
 
 class Trace(BaseModel):
     """A single LLM call record comprising multiple spans."""
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
 
     trace_id: str
     project: str
     tags: Dict[str, str] = Field(default_factory=dict)
     spans: List[Span] = Field(default_factory=list)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PromptVersion(BaseModel):
     """Snapshot of a prompt template."""
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
 
     prompt_id: str
     version: str
     template: str
     prompt_hash: str  # SHA-256 hash of the template
     tags: Dict[str, str] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TestCase(BaseModel):
     """A single test case for regression testing."""
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
 
     id: str
     query: str
@@ -72,10 +72,10 @@ class TestCase(BaseModel):
 
 class RegressionSuite(BaseModel):
     """A collection of test cases."""
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
 
     id: str
     name: str
     test_cases: List[TestCase] = Field(default_factory=list)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, Any] = Field(default_factory=dict)

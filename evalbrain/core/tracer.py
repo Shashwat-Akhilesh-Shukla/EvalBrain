@@ -58,6 +58,22 @@ class SpanContext:
     def set_metadata(self, key: str, value: Any):
         self.span.metadata[key] = value
 
+    def set_tokens(self, input_tokens: int, output_tokens: int, model_name: Optional[str] = None):
+        """Record token usage and calculate cost if a cost tracker is configured."""
+        self.span.token_counts = {
+            "input": input_tokens,
+            "output": output_tokens,
+            "total": input_tokens + output_tokens
+        }
+        if model_name:
+            self.span.model_name = model_name
+            
+        # Calculate cost if a cost tracker is configured
+        if hasattr(self.brain, "cost_tracker") and self.brain.cost_tracker and self.span.model_name:
+            self.span.cost_usd = self.brain.cost_tracker.calculate_cost(
+                self.span.model_name, input_tokens, output_tokens
+            )
+
     def evaluate(self, output: Any = None, context: Any = None, reference: Any = None, evaluators: List[str] = None):
         """
         Manually trigger evaluation for this span.
@@ -72,9 +88,14 @@ class SpanContext:
 
 
 class EvalBrain:
-    def __init__(self, project: str = "default", storage=None):
+    def __init__(self, project: str = "default", storage=None, cost_config=None):
         self.project = project
         self.storage = storage  # To be implemented in Step 4
+        
+        # Initialize Cost Tracker
+        from evalbrain.trackers.cost import CostTracker
+        self.cost_tracker = CostTracker(config=cost_config)
+        
         self._local_traces: List[Trace] = [] # Temporary storage for development
 
     def trace(self, name: str, tags: Dict[str, str] = None) -> SpanContext:

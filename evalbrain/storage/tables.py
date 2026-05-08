@@ -34,7 +34,7 @@ class SpanTable(Base):
     cost_usd: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     token_counts: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     model_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    span_metadata: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
     
     trace: Mapped["TraceTable"] = relationship("TraceTable", back_populates="spans")
     eval_results: Mapped[List["EvalResultTable"]] = relationship(
@@ -50,7 +50,7 @@ class EvalResultTable(Base):
     score: Mapped[float] = mapped_column(Float)
     passed: Mapped[bool] = mapped_column(Boolean)
     explanation: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    eval_metadata: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
     
     span: Mapped["SpanTable"] = relationship("SpanTable", back_populates="eval_results")
 
@@ -63,4 +63,4 @@ class PromptVersionTable(Base):
     prompt_hash: Mapped[str] = mapped_column(String, index=True)
     tags: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime)
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    prompt_metadata: Mapped[dict] = mapped_column("metadata", JSON, default=dict)

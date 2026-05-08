@@ -29,6 +29,10 @@ class SpanContext:
         self.span.end_time = datetime.now(timezone.utc)
         self.span.latency_ms = (self.span.end_time - self.span.start_time).total_seconds() * 1000
         
+        if exc_type:
+            self.span.metadata["error"] = str(exc_val)
+            self.span.metadata["error_type"] = exc_type.__name__
+            
         # Pop from stack
         stack = _current_spans.get().copy()
         if stack:

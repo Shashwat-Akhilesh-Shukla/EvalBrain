@@ -33,11 +33,31 @@ class HallucinationEvaluator(BaseEvaluator):
         if self.method not in ("llm", "nli"):
             raise ValueError("Method must be 'llm' or 'nli'")
             
-        if self.method == "llm" and not self.llm_callable:
-            raise ValueError("llm_callable must be provided when using method='llm'")
-            
         if self.method == "nli":
             self._load_nli_model()
+            
+    def _get_llm_callable(self):
+        if self.llm_callable:
+            return self.llm_callable
+        
+        # Fallback to checking for openai
+        try:
+            import openai
+            import os
+            client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "dummy"))
+            def default_openai_callable(prompt: str) -> str:
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.0
+                )
+                return response.choices[0].message.content
+            return default_openai_callable
+        except ImportError:
+            raise ValueError(
+                "No llm_callable provided and 'openai' package is not installed. "
+                "Either provide an llm_callable or run `pip install openai`."
+            )
             
     def _load_nli_model(self):
         try:
@@ -96,13 +116,16 @@ Respond ONLY with a valid JSON object in the following format:
 }}
 """
         try:
-            response_text = self.llm_callable(prompt)
+            callable_func = self._get_llm_callable()
+            response_text = callable_func(prompt)
             # Basic cleanup in case the LLM returned markdown blocks
             response_text = response_text.strip()
             if response_text.startswith("```json"):
                 response_text = response_text[7:]
-            if response_text.startswith("```"):
+            elif response_text.startswith("```"):
                 response_text = response_text[3:]
+                
+            response_text = response_text.strip()
             if response_text.endswith("```"):
                 response_text = response_text[:-3]
                 

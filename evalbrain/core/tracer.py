@@ -74,17 +74,31 @@ class SpanContext:
                 self.span.model_name, input_tokens, output_tokens
             )
 
-    def evaluate(self, output: Any = None, context: Any = None, reference: Any = None, evaluators: List[str] = None):
+    def evaluate(self, output: Any = None, context: Any = None, reference: Any = None, evaluators: List[Union[str, Any]] = None):
         """
         Manually trigger evaluation for this span.
-        Step 6-8 will implement the actual evaluators.
         """
         if output is not None: self.span.output = output
         if context is not None: self.span.context = context
         if reference is not None: self.span.reference = reference
         
-        # Placeholder for evaluator logic (Step 6+)
-        pass
+        if not evaluators:
+            return
+            
+        from evalbrain.evaluators import get_evaluator
+        
+        for evaluator_item in evaluators:
+            if isinstance(evaluator_item, str):
+                evaluator_inst = get_evaluator(evaluator_item)
+            else:
+                evaluator_inst = evaluator_item
+                
+            result = evaluator_inst.evaluate(
+                output=self.span.output,
+                context=self.span.context,
+                reference=self.span.reference
+            )
+            self.span.eval_results.append(result)
 
 
 class EvalBrain:

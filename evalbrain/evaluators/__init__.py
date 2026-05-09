@@ -1,10 +1,12 @@
 from typing import Dict, Type, Any
 from evalbrain.evaluators.base import BaseEvaluator
 from evalbrain.evaluators.hallucination import HallucinationEvaluator
+from evalbrain.evaluators.retrieval import RetrievalEvaluator
 
 # Evaluator registry
 EVALUATORS: Dict[str, Type[BaseEvaluator]] = {
     "hallucination": HallucinationEvaluator,
+    "retrieval": RetrievalEvaluator,
 }
 
 def get_evaluator(name: str, **kwargs) -> BaseEvaluator:
@@ -24,4 +26,4 @@ def get_evaluator(name: str, **kwargs) -> BaseEvaluator:
     evaluator_class = EVALUATORS[name]
     return evaluator_class(**kwargs)
 
-__all__ = ["BaseEvaluator", "HallucinationEvaluator", "get_evaluator"]
+__all__ = ["BaseEvaluator", "HallucinationEvaluator", "RetrievalEvaluator", "get_evaluator"]

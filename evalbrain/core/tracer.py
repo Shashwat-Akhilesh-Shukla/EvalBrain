@@ -114,6 +114,10 @@ class EvalBrain:
         from evalbrain.trackers.cost import CostTracker
         self.cost_tracker = CostTracker(config=cost_config)
         
+        # Initialize Prompt Registry
+        from evalbrain.core.prompt_registry import PromptRegistry
+        self.prompt = PromptRegistry(self)
+        
         self._local_traces: List[Trace] = [] # Temporary storage for development
 
     def trace(self, name: str, tags: Dict[str, str] = None) -> SpanContext:

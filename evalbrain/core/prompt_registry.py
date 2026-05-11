@@ -1,7 +1,10 @@
 import hashlib
 import difflib
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from evalbrain.core.tracer import EvalBrain
 
 from evalbrain.models import PromptVersion
 from evalbrain.core.tracer import _current_spans

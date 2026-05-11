@@ -78,7 +78,7 @@ class SpanContext:
                 self.span.model_name, input_tokens, output_tokens
             )
 
-    def evaluate(self, output: Any = None, context: Any = None, reference: Any = None, evaluators: List[Union[str, Any]] = None):
+    def evaluate(self, output: Any = None, context: Any = None, reference: Any = None, evaluators: Optional[List[Union[str, Any]]] = None):
         """
         Manually trigger evaluation for this span.
         """
@@ -120,7 +120,7 @@ class EvalBrain:
         
         self._local_traces: List[Trace] = [] # Temporary storage for development
 
-    def trace(self, name: str, tags: Dict[str, str] = None) -> SpanContext:
+    def trace(self, name: str, tags: Optional[Dict[str, str]] = None) -> SpanContext:
         """Context manager for tracing a block of code."""
         trace = _current_trace.get()
         if not trace:
@@ -141,7 +141,7 @@ class EvalBrain:
         
         return SpanContext(span, self)
 
-    def eval(self, name: Optional[str] = None, tags: Dict[str, str] = None):
+    def eval(self, name: Optional[str] = None, tags: Optional[Dict[str, str]] = None):
         """Decorator for tracing a function."""
         def decorator(func):
             @wraps(func)

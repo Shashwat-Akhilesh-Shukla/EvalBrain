@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 from evalbrain.models import Trace
 
 
@@ -6,7 +6,7 @@ class LatencyTracker:
     """Utility class to aggregate and calculate latency metrics."""
     
     @staticmethod
-    def calculate_percentiles(latencies: List[float], percentiles: List[float] = None) -> Dict[str, float]:
+    def calculate_percentiles(latencies: List[float], percentiles: Optional[List[float]] = None) -> Dict[str, float]:
         """
         Calculate specified percentiles for a list of latencies.
         Default percentiles: p50, p90, p95, p99.
@@ -31,7 +31,7 @@ class LatencyTracker:
         return results
 
     @staticmethod
-    def get_span_latencies(traces: List[Trace], span_name: str = None) -> List[float]:
+    def get_span_latencies(traces: List[Trace], span_name: Optional[str] = None) -> List[float]:
         """
         Extract all latencies (in ms) from a list of traces, optionally filtered by span name.
         """
@@ -44,7 +44,7 @@ class LatencyTracker:
         return latencies
 
     @staticmethod
-    def aggregate_trace_latencies(traces: List[Trace], span_name: str = None) -> Dict[str, float]:
+    def aggregate_trace_latencies(traces: List[Trace], span_name: Optional[str] = None) -> Dict[str, float]:
         """
         Calculate latency percentiles across all spans in the provided traces.
         """

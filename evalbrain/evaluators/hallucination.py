@@ -159,6 +159,8 @@ Respond ONLY with a valid JSON object in the following format:
             import numpy as np
             # To handle long outputs, ideally we'd split into sentences, but for simplicity we'll pass it as is
             # or you can chunk it. Here we do a single pass.
+            if self._nli_model is None:
+                raise RuntimeError("NLI model is not loaded.")
             scores = self._nli_model.predict([(context, output)])
             # Apply softmax to get probabilities
             exp_scores = np.exp(scores[0])

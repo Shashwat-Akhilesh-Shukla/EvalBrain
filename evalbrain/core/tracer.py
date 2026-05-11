@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 from contextvars import ContextVar
 
 from evalbrain.models import Trace, Span, EvalResult
@@ -155,6 +155,21 @@ class EvalBrain:
                     return result
             return wrapper
         return decorator
+
+    def run_suite(self, suite_source: Union[str, Any], target_func: Callable[..., Any], evaluators: Optional[List[Union[str, Any]]] = None) -> Any:
+        """Run a regression test suite against a target function."""
+        from evalbrain.regression.suite import RegressionRunner, load_suite
+        from evalbrain.models import RegressionSuite
+        
+        if isinstance(suite_source, str):
+            suite = load_suite(suite_source)
+        elif isinstance(suite_source, RegressionSuite):
+            suite = suite_source
+        else:
+            raise ValueError("suite_source must be a path string or RegressionSuite instance")
+            
+        runner = RegressionRunner(self)
+        return runner.run(suite, target_func, evaluators)
 
     def _save_trace(self, trace: Trace):
         """Internal method to persist the trace."""

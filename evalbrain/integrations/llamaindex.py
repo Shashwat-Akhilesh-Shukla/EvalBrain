@@ -19,7 +19,7 @@ class EvalBrainCallbackHandler(BaseCallbackHandler): # type: ignore
             )
         super().__init__(event_starts_to_ignore=[], event_ends_to_ignore=[])
         self.brain = brain
-        self.event_spans = {}
+        self.event_spans: Dict[str, Any] = {}
 
     def on_event_start(
         self,

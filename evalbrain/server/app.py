@@ -15,9 +15,11 @@ app = FastAPI(
     version="0.1.0",
 )
 
+_brain_instance = EvalBrain()
+
 def get_brain() -> EvalBrain:
-    # Instantiate the global brain
-    return EvalBrain()
+    # Return the singleton instance so in-memory state persists across API calls
+    return _brain_instance
 
 class RegressionRunRequest(BaseModel):
     suite: str

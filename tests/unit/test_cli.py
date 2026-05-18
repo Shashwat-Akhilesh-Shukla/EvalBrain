@@ -21,10 +21,12 @@ def test_cost_summary_command():
     assert result.exit_code == 0
     assert "Cost summary" in result.stdout
 
-def test_dashboard_command():
+@patch("uvicorn.run")
+def test_dashboard_command(mock_run):
     result = runner.invoke(app, ["dashboard"])
     assert result.exit_code == 0
     assert "Starting EvalBrain Dashboard" in result.stdout
+    mock_run.assert_called_once()
 
 def test_export_json_command():
     result = runner.invoke(app, ["export", "json"])

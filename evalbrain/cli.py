@@ -131,13 +131,7 @@ def export_traces(format: str = typer.Argument("json", help="Format to export (j
     else:
         console.print(f"[bold red]Unknown format:[/bold red] {format}")
 
-@server_app.command("start")
-def start_server(
-    host: str = typer.Option("127.0.0.1", help="Host IP to bind to"),
-    port: int = typer.Option(8000, help="Port to bind to"),
-    reload: bool = typer.Option(True, help="Enable auto-reload")
-):
-    """Launch the FastAPI API server and Dashboard."""
+def _run_server(host: str, port: int, reload: bool):
     console.print(f"[bold green]Starting EvalBrain API Server on {host}:{port}...[/bold green]")
     try:
         import uvicorn
@@ -146,12 +140,21 @@ def start_server(
         console.print("[bold red]Uvicorn is not installed. Please install evalbrain[server][/bold red]")
         raise typer.Exit(code=1)
 
+@server_app.command("start")
+def start_server(
+    host: str = typer.Option("127.0.0.1", help="Host IP to bind to"),
+    port: int = typer.Option(8000, help="Port to bind to"),
+    reload: bool = typer.Option(True, help="Enable auto-reload")
+):
+    """Launch the FastAPI API server and Dashboard."""
+    _run_server(host, port, reload)
+
 @app.command("dashboard")
 def start_dashboard():
     """Launch the web UI dashboard."""
     console.print("[bold green]Starting EvalBrain Dashboard...[/bold green]")
     console.print("[yellow]Starting the API server instead...[/yellow]")
-    start_server()
+    _run_server("127.0.0.1", 8000, True)
 
 if __name__ == "__main__":
     app()

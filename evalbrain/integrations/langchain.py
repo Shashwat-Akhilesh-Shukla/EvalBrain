@@ -19,7 +19,7 @@ class EvalBrainCallbackHandler(BaseCallbackHandler): # type: ignore
             )
         super().__init__()
         self.brain = brain
-        self.run_spans = {}
+        self.run_spans: Dict[Any, Any] = {}
 
     def on_llm_start(
         self,

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvalBrain Dashboard</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/dashboard/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-brain"></i>
+                <span>EvalBrain</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" data-view="overview" class="active"><i class="fa-solid fa-chart-pie"></i> Overview</a></li>
+                <li><a href="#" data-view="traces"><i class="fa-solid fa-list"></i> Traces</a></li>
+                <li><a href="#" data-view="regression"><i class="fa-solid fa-vial"></i> Regression</a></li>
+                <li><a href="#" data-view="prompts"><i class="fa-solid fa-scroll"></i> Prompts</a></li>
+                <li><a href="#" data-view="cost"><i class="fa-solid fa-dollar-sign"></i> Cost</a></li>
+                <li><a href="#" data-view="settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="topbar">
+                <h1 id="page-title">Overview</h1>
+                <div class="project-selector">
+                    <select id="project-select" class="glass-input">
+                        <option value="">All Projects</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div id="views-container">
+                <!-- Overview View -->
+                <section id="view-overview" class="view active">
+                    <div class="metrics-grid">
+                        <div class="metric-card glass-panel">
+                            <h3>Total Traces</h3>
+                            <div class="metric-value" id="metric-total-traces">0</div>
+                        </div>
+                        <div class="metric-card glass-panel">
+                            <h3>Total Spans</h3>
+                            <div class="metric-value" id="metric-total-spans">0</div>
+                        </div>
+                        <div class="metric-card glass-panel">
+                            <h3>Total Cost</h3>
+                            <div class="metric-value" id="metric-total-cost">$0.00</div>
+                        </div>
+                        <div class="metric-card glass-panel">
+                            <h3>Pass Rate</h3>
+                            <div class="metric-value" id="metric-pass-rate">--%</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Traces View -->
+                <section id="view-traces" class="view">
+                    <div class="glass-panel table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Trace ID</th>
+                                    <th>Project</th>
+                                    <th>Spans</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="traces-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Regression View -->
+                <section id="view-regression" class="view">
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h2>Regression Test Runner</h2>
+                        <div class="run-form">
+                            <input type="text" id="reg-suite" placeholder="Suite file (e.g. tests.yaml)" class="glass-input">
+                            <input type="text" id="reg-target" placeholder="Target (e.g. myapp:func)" class="glass-input">
+                            <button id="btn-run-regression" class="btn primary">Run Suite</button>
+                        </div>
+                        <div id="regression-results" class="results-area mt-4">
+                            <!-- Results here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Prompts View -->
+                <section id="view-prompts" class="view">
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h2>Prompt Registry</h2>
+                        <p class="text-muted">Prompt version tracking will be displayed here.</p>
+                    </div>
+                </section>
+
+                <!-- Cost View -->
+                <section id="view-cost" class="view">
+                    <div class="glass-panel chart-container">
+                        <h2 style="margin-bottom: 16px;">Cost Over Time</h2>
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Settings View -->
+                <section id="view-settings" class="view">
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h2>Settings</h2>
+                        <p class="text-muted">Configuration options (Storage, Providers, etc.)</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- App Logic -->
+    <script src="/dashboard/app.js"></script>
+</body>
+</html>
